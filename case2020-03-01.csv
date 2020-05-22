@@ -1,0 +1,26 @@
+date,county,state,fips,cases,deaths
+2020-03-01,Maricopa,Arizona,4013,1,0
+2020-03-01,Alameda,California,6001,1,0
+2020-03-01,Humboldt,California,6023,1,0
+2020-03-01,Los Angeles,California,6037,1,0
+2020-03-01,Marin,California,6041,1,0
+2020-03-01,Napa,California,6055,1,0
+2020-03-01,Orange,California,6059,1,0
+2020-03-01,Sacramento,California,6067,3,0
+2020-03-01,San Diego,California,6073,1,0
+2020-03-01,San Francisco,California,6075,3,0
+2020-03-01,Santa Clara,California,6085,7,0
+2020-03-01,Solano,California,6095,12,0
+2020-03-01,Sonoma,California,6097,1,0
+2020-03-01,Hillsborough,Florida,12057,1,0
+2020-03-01,Manatee,Florida,12081,1,0
+2020-03-01,Cook,Illinois,17031,3,0
+2020-03-01,Suffolk,Massachusetts,25025,1,0
+2020-03-01,Douglas,Nebraska,31055,13,0
+2020-03-01,Washington,Oregon,41067,2,0
+2020-03-01,Bexar,Texas,48029,11,0
+2020-03-01,Salt Lake,Utah,49035,1,0
+2020-03-01,King,Washington,53033,11,3
+2020-03-01,Snohomish,Washington,53061,2,0
+2020-03-01,Spokane,Washington,53063,4,0
+2020-03-01,Dane,Wisconsin,55025,1,0
