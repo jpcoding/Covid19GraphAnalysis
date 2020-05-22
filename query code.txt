@@ -1,26 +1,21 @@
 
 ## Created nodes 
-LOAD CSV WITH HEADERS FROM 'file:/Apr2Cases.csv' AS row
+LOAD CSV WITH HEADERS FROM 'file:/case-date.csv' AS row
 CREATE (:COUNTY {FIPS: row.FIPS, name: row.county, state:row.state, death:row.deaths, cases: row.cases})
 
-
 ## create edges 
-
-
-LOAD CSV WITH HEADERS FROM 'file:/trimed.csv' AS row
+LOAD CSV WITH HEADERS FROM 'file:/LEX-date row
 MATCH (m:COUNTY {FIPS: row.COUNTY_PRE})
 MATCH (g:COUNTY {FIPS: row.COUNTY})
 MERGE (m)-[r:LEX]->(g)
 ON CREATE SET r.LEX = toFloat(row.LEX)
 
-
-## Query New York
-
+## Query New York (certain State) 
 MATCH (u:COUNTY)
 WHERE u.state =  'New York'
-RETURN p LIMIT 50
+RETURN u
 
-## single direction 
+## single direction relationship  
 Match (m:COUNTY)-[r:LEX]->(g:COUNTY)
 Where Not (g)-[]->(m)
 Return m.state, r.LEX, g.state
@@ -34,29 +29,21 @@ CALL apoc.static.set("producers.cached", g)
 YIELD value
 RETURN value, g
 
-## 
-MATCH p=()->()
-Return p
-
-##
-
-## find out in from one state
+## find "out" and "in" relationship for one state
 MATCH (p:COUNTY {state:"Missouri"})
 WITH size((p)-[:LEX]->()) as out, 
      size((p)<-[:LEX]-()) as in,
      p
 RETURN p, in, out, (out - in) as diff
 ORDER BY diff DESC
-
-
-## 
+## Rank by out degrees 
 Match (p:COUNTY)-[r:LEX]->(g:COUNTY)
 WITH size((p)-[r:LEX]->(g)) as out, 
      size((p)<-[r:LEX]-(g)) as in,
      p,r
 RETURN p.name,p., r.LEX ,in, out, (out - in) as diff
-ORDER BY r.LEX DESC
-
+ORDER BY out DESC
+## rank by incoming degrees 
 Match (p:COUNTY)-[r:LEX]->(g:COUNTY)
 WITH size((p)-[r:LEX]->(g)) as out, 
      size((p)<-[r:LEX]-(g)) as in,
@@ -65,12 +52,12 @@ WITH size((p)-[r:LEX]->(g)) as out,
 RETURN p.state,g.state, out
 ORDER BY in DESC
 
-
+## Compresesed to State-Level
 MATCH (n)
 CALL apoc.nodes.group(['COUNTY'],['state']);
 CALL apoc.nodes.group(['*'],['state'])
 
-## find Counties with most incoming travelers (top 10)
+## find Counties with most incoming degrees(top 10)
 MATCH (p:COUNTY)
 WITH size((p)-[:LEX]->()) as out, 
      size((p)<-[:LEX]-()) as in,
@@ -78,11 +65,11 @@ WITH size((p)-[:LEX]->()) as out,
 RETURN (p.name+','+p.state+'-'+out) as county
 ORDER BY out DESC
 LIMIT 10
-
-
+## in-out information for one state 
 MATCH (p:COUNTY {state:"Missouri"})
 WITH size((p)-[:LEX]->()) as out, 
      size((p)<-[:LEX]-()) as in,
      p
 RETURN p, in, out, (out - in) as diff
 ORDER BY diff DESC
+
