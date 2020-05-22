@@ -1,0 +1,88 @@
+
+## Created nodes 
+LOAD CSV WITH HEADERS FROM 'file:/Apr2Cases.csv' AS row
+CREATE (:COUNTY {FIPS: row.FIPS, name: row.county, state:row.state, death:row.deaths, cases: row.cases})
+
+
+## create edges 
+
+
+LOAD CSV WITH HEADERS FROM 'file:/trimed.csv' AS row
+MATCH (m:COUNTY {FIPS: row.COUNTY_PRE})
+MATCH (g:COUNTY {FIPS: row.COUNTY})
+MERGE (m)-[r:LEX]->(g)
+ON CREATE SET r.LEX = toFloat(row.LEX)
+
+
+## Query New York
+
+MATCH (u:COUNTY)
+WHERE u.state =  'New York'
+RETURN p LIMIT 50
+
+## single direction 
+Match (m:COUNTY)-[r:LEX]->(g:COUNTY)
+Where Not (g)-[]->(m)
+Return m.state, r.LEX, g.state
+
+## export graph
+MATCH path = (:Person)-[produced:PRODUCED]->(:Movie)
+WITH collect(path) AS paths
+CALL apoc.graph.fromPaths(paths, "producers", {})
+YIELD graph AS g
+CALL apoc.static.set("producers.cached", g)
+YIELD value
+RETURN value, g
+
+## 
+MATCH p=()->()
+Return p
+
+##
+
+## find out in from one state
+MATCH (p:COUNTY {state:"Missouri"})
+WITH size((p)-[:LEX]->()) as out, 
+     size((p)<-[:LEX]-()) as in,
+     p
+RETURN p, in, out, (out - in) as diff
+ORDER BY diff DESC
+
+
+## 
+Match (p:COUNTY)-[r:LEX]->(g:COUNTY)
+WITH size((p)-[r:LEX]->(g)) as out, 
+     size((p)<-[r:LEX]-(g)) as in,
+     p,r
+RETURN p.name,p., r.LEX ,in, out, (out - in) as diff
+ORDER BY r.LEX DESC
+
+Match (p:COUNTY)-[r:LEX]->(g:COUNTY)
+WITH size((p)-[r:LEX]->(g)) as out, 
+     size((p)<-[r:LEX]-(g)) as in,
+     p,r,g
+     WHERE p.state <> g.state
+RETURN p.state,g.state, out
+ORDER BY in DESC
+
+
+MATCH (n)
+CALL apoc.nodes.group(['COUNTY'],['state']);
+CALL apoc.nodes.group(['*'],['state'])
+
+## find Counties with most incoming travelers (top 10)
+MATCH (p:COUNTY)
+WITH size((p)-[:LEX]->()) as out, 
+     size((p)<-[:LEX]-()) as in,
+     p
+RETURN (p.name+','+p.state+'-'+out) as county
+ORDER BY out DESC
+LIMIT 10
+
+
+MATCH (p:COUNTY {state:"Missouri"})
+WITH size((p)-[:LEX]->()) as out, 
+     size((p)<-[:LEX]-()) as in,
+     p
+RETURN p, in, out, (out - in) as diff
+ORDER BY diff DESC
